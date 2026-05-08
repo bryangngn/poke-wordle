@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poké-Ahorcado</title>
+    <title>Poké Ahorcado</title>
     <style>
         :root {
-            /* Paleta de colores elegante y moderna */
-            --header-bg: #2c3e50; /* Azul Pizarra Profundo */
-            --accent-gold: #d4af37; /* Oro para detalles */
+            --poke-blue: #3B4CCA;
+            --poke-yellow: #FFCB05;
+            --poke-gold: #CCAA00;
             --bg-dark: #121213;
             --tile-bg: #272729;
             --correct: #538d4e;
             --text-main: #ffffff;
-            --text-muted: #818384;
+            --border-soft: #3a3a3c;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,24 +28,25 @@
             min-height: 100vh;
         }
 
-        /* Cabecera Sobria */
+        /* Cabecera con esencia Pokémon pero elegante */
         header {
-            background-color: var(--header-bg);
             width: 100%;
-            padding: 25px 0;
+            padding: 20px 0;
             text-align: center;
-            border-bottom: 3px solid var(--accent-gold);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            background-color: var(--poke-blue);
+            border-bottom: 4px solid var(--poke-yellow);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             margin-bottom: 30px;
         }
 
         h1 {
             margin: 0;
-            font-size: 1.6rem;
-            letter-spacing: 6px;
-            font-weight: 300;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: var(--poke-yellow);
             text-transform: uppercase;
-            color: var(--text-main);
+            /* Sombra suave para dar relieve sin ser estridente */
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
         }
 
         #game-container {
@@ -60,7 +61,7 @@
         #word-grid {
             display: flex;
             gap: 8px;
-            margin: 20px 0;
+            margin: 25px 0;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -69,64 +70,72 @@
             width: 45px;
             height: 45px;
             background: var(--tile-bg);
-            border: 2px solid #3a3a3c;
+            border: 2px solid var(--border-soft);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
             font-weight: bold;
             border-radius: 4px;
-            text-transform: uppercase; /* Asegura mayúsculas visuales */
-            transition: transform 0.2s;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
         }
 
         .tile.revealed {
             background-color: var(--correct);
             border-color: var(--correct);
-            transform: scale(1.05);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 0px #3e6a3a;
         }
 
-        /* Pistas y Estado */
+        /* Botones de Pistas estilo Medalla */
         .hints {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .btn-hint {
             background: transparent;
-            color: var(--accent-gold);
-            border: 1px solid var(--accent-gold);
-            padding: 8px 16px;
-            border-radius: 20px;
+            color: var(--poke-yellow);
+            border: 2px solid var(--poke-yellow);
+            padding: 8px 18px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.7rem;
-            text-transform: uppercase;
+            font-size: 0.8rem;
             font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        .btn-hint:hover {
+            background: var(--poke-yellow);
+            color: var(--poke-blue);
         }
 
         #hint-display {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: #aaa;
             margin-bottom: 25px;
-            min-height: 1.2rem;
             text-align: center;
+            height: 1.2rem;
+            font-style: italic;
         }
 
-        /* Controles de entrada */
+        /* Controles */
         .input-area {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         #letter-input {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             font-size: 1.8rem;
             text-align: center;
-            border: 2px solid #565758;
-            background: #121213;
+            border: 2px solid var(--border-soft);
+            background: #1e1e1f;
             color: white;
             border-radius: 8px;
             text-transform: uppercase;
@@ -134,13 +143,13 @@
         }
 
         #letter-input:focus {
-            border-color: var(--accent-gold);
+            border-color: var(--poke-yellow);
         }
 
         .btn-action {
-            background: var(--header-bg);
+            background: var(--poke-blue);
             color: white;
-            border: 1px solid #565758;
+            border: 1px solid var(--poke-yellow);
             padding: 0 25px;
             font-weight: bold;
             border-radius: 8px;
@@ -155,15 +164,15 @@
             cursor: pointer;
             text-decoration: underline;
             font-size: 0.8rem;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
-        /* Letras descartadas */
+        /* Letras descartadas (Tipo teclado Wordle) */
         .discarded {
             width: 100%;
             text-align: center;
-            border-top: 1px solid #3a3a3c;
-            padding-top: 20px;
+            border-top: 1px solid var(--border-soft);
+            padding-top: 25px;
         }
 
         #letters-box {
@@ -175,27 +184,32 @@
         }
 
         .bad-letter {
-            background: #272729;
-            color: #565758;
-            width: 30px;
-            height: 35px;
+            background: var(--border-soft);
+            color: #777;
+            width: 32px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 4px;
             font-weight: bold;
+            font-size: 0.9rem;
         }
 
         /* Modal Resultado */
-        #modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 10; }
+        #modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.92); z-index: 10; }
         #result-modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1e1e1f; padding: 30px; border-radius: 12px; z-index: 11; width: 85%; max-width: 400px; text-align: center;
-            border: 1px solid var(--accent-gold);
+            background: #1e1e1f; padding: 30px; border-radius: 15px; z-index: 11; width: 85%; max-width: 400px; text-align: center;
+            border: 2px solid var(--poke-yellow);
         }
-        #result-modal img { width: 180px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
-        #result-modal h2 { margin: 10px 0; color: var(--correct); letter-spacing: 2px; }
-        #result-modal p { color: #ccc; font-size: 0.9rem; line-height: 1.6; text-align: justify; margin: 15px 0; }
+        #result-modal img { width: 180px; margin-bottom: 10px; }
+        #result-modal h2 { margin: 10px 0; color: var(--poke-yellow); text-transform: uppercase; letter-spacing: 2px; }
+        #result-modal p { color: #ccc; font-size: 0.9rem; line-height: 1.6; text-align: justify; margin: 15px 0; max-height: 120px; overflow-y: auto; padding-right: 5px; }
+
+        /* Scrollbar para la descripción */
+        p::-webkit-scrollbar { width: 5px; }
+        p::-webkit-scrollbar-thumb { background: var(--poke-yellow); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -210,7 +224,7 @@
             <button class="btn-hint" onclick="getHint('type')">Tipo</button>
         </div>
         
-        <div id="hint-display">Detectando Pokémon salvaje...</div>
+        <div id="hint-display">Introduce una letra para rastrear al Pokémon...</div>
 
         <div id="word-grid"></div>
 
@@ -222,7 +236,7 @@
         <button class="btn-surrender" onclick="endGame(true)">Rendirse</button>
 
         <div class="discarded">
-            <div style="font-size: 0.7rem; color: #565758; letter-spacing: 2px;">LETRAS DESCARTADAS</div>
+            <div style="font-size: 0.7rem; color: #565758; letter-spacing: 2px; font-weight: bold;">Rastro perdido (Letras no presentes)</div>
             <div id="letters-box"></div>
         </div>
     </div>
@@ -231,9 +245,9 @@
     <div id="result-modal">
         <h2 id="modal-title"></h2>
         <img id="poke-img" src="" alt="">
-        <h3 id="poke-name" style="text-transform: uppercase; color: var(--accent-gold); font-size: 1.5rem; margin: 10px 0;"></h3>
+        <h3 id="poke-name" style="text-transform: uppercase; color: white; font-size: 1.6rem; margin: 10px 0; border-bottom: 2px solid var(--poke-yellow); display: inline-block; padding: 0 10px;"></h3>
         <p id="poke-desc"></p>
-        <button class="btn-action" onclick="startNewGame()" style="width: 100%; height: 50px; background: var(--correct); border: none;">Nueva Partida</button>
+        <button class="btn-action" onclick="startNewGame()" style="width: 100%; height: 50px; background: var(--correct); border: none; font-size: 1.1rem; margin-top: 10px;">¡Nueva Partida!</button>
     </div>
 
     <script>
@@ -250,9 +264,9 @@
         };
 
         async function startNewGame() {
-            document.getElementById('word-grid').innerHTML = "...";
+            document.getElementById('word-grid').innerHTML = "Cargando...";
             document.getElementById('letters-box').innerHTML = "";
-            document.getElementById('hint-display').innerText = "Buscando rastro de Pokémon...";
+            document.getElementById('hint-display').innerText = "Rastreando Pokémon en la zona...";
             document.getElementById('modal-overlay').style.display = 'none';
             document.getElementById('result-modal').style.display = 'none';
             document.getElementById('letter-input').value = "";
@@ -276,7 +290,7 @@
                 if (randomId > 809) region = "Galar";
                 if (randomId > 905) region = "Paldea";
 
-                const desc = speciesData.flavor_text_entries.find(e => e.language.name === 'es')?.flavor_text || "Descripción no disponible en la base de datos.";
+                const desc = speciesData.flavor_text_entries.find(e => e.language.name === 'es')?.flavor_text || "Datos no disponibles.";
                 
                 pokemonData = {
                     name: data.name.split('-')[0].toLowerCase(),
@@ -288,7 +302,7 @@
 
                 targetName = pokemonData.name;
                 revealedLetters = new Array(targetName.length).fill(null);
-                document.getElementById('hint-display').innerText = "¡Pokémon detectado! ¿Quién es?";
+                document.getElementById('hint-display').innerText = "¡Pokémon detectado! ¿Cuál es su nombre?";
                 renderBoard();
             } catch (e) { console.error(e); }
         }
@@ -299,7 +313,6 @@
             for (let i = 0; i < targetName.length; i++) {
                 const tile = document.createElement('div');
                 tile.className = 'tile' + (revealedLetters[i] ? ' revealed' : '');
-                // Convertimos siempre a Mayúsculas
                 tile.innerText = revealedLetters[i] ? revealedLetters[i].toUpperCase() : "";
                 container.appendChild(tile);
             }
@@ -338,13 +351,13 @@
 
         function getHint(type) {
             const display = document.getElementById('hint-display');
-            display.innerText = (type === 'region') ? `Región de origen: ${pokemonData.region}` : `Tipo elemental: ${pokemonData.type}`;
+            display.innerText = (type === 'region') ? `Región detectada: ${pokemonData.region}` : `Tipo detectado: ${pokemonData.type}`;
         }
 
         function endGame(surrender) {
-            document.getElementById('modal-title').innerText = surrender ? "EL POKÉMON HUYÓ..." : "¡CONSEGUIDO!";
+            document.getElementById('modal-title').innerText = surrender ? "EL POKÉMON HUYÓ" : "¡POKÉMON CAPTURADO!";
             document.getElementById('poke-img').src = pokemonData.img;
-            document.getElementById('poke-name').innerText = pokemonData.name;
+            document.getElementById('poke-name').innerText = pokemonData.name.toUpperCase();
             document.getElementById('poke-desc').innerText = pokemonData.desc;
             document.getElementById('modal-overlay').style.display = 'block';
             document.getElementById('result-modal').style.display = 'block';
