@@ -3,178 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokéWordle Experto</title>
+    <title>Poké Ahorcado</title>
     <style>
         :root {
-            --color-correct: #538d4e;
-            --color-present: #b59f3b; /* Amarillo/Naranja de Wordle */
-            --color-absent: #3a3a3c;
-            --color-tile-border: #3a3a3c;
-            --bg-color: #121213;
-            --text-color: #ffffff;
+            --poke-red: #ff0000;
+            --poke-blue: #3b4cca;
+            --poke-yellow: #ffcb05;
+            --poke-gold: #c7a008;
+            --dark-bg: #212121;
+            --tile-bg: #303030;
+            --correct: #538d4e;
+            --present: #b59f3b;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 10px;
             min-height: 100vh;
-            text-transform: uppercase;
         }
 
+        /* Cabecera Estilo Pokémon */
         header {
-            border-bottom: 1px solid var(--color-tile-border);
+            background: var(--poke-red);
             width: 100%;
+            padding: 15px 0;
             text-align: center;
-            padding: 10px 0;
-            margin-bottom: 15px;
+            border-bottom: 5px solid var(--poke-blue);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
         }
 
-        h1 { margin: 0; letter-spacing: 1px; font-size: 1.5rem; }
+        h1 {
+            margin: 0;
+            color: var(--poke-yellow);
+            text-shadow: 3px 3px var(--poke-blue);
+            letter-spacing: 3px;
+            font-size: 2rem;
+            -webkit-text-stroke: 1px var(--poke-blue);
+        }
+
+        /* Pantalla de juego (Pokédex style) */
+        #game-screen {
+            background: #444;
+            border: 10px solid #cc0000;
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
         #word-grid {
             display: flex;
-            gap: 5px;
-            margin: 15px 0;
+            gap: 8px;
+            margin: 20px 0;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .tile {
-            width: 42px;
-            height: 42px;
-            border: 2px solid var(--color-tile-border);
+            width: 45px;
+            height: 45px;
+            background: var(--tile-bg);
+            border: 3px solid #555;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            transition: all 0.4s ease;
-            background-color: transparent;
+            border-radius: 5px;
+            color: transparent; /* Oculta la letra inicialmente */
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .tile.correct {
-            background-color: var(--color-correct);
-            border-color: var(--color-correct);
+        .tile.revealed {
+            background-color: var(--correct);
+            border-color: #2e4d2a;
+            color: white;
+            transform: scale(1.1);
         }
 
-        .tile.present {
-            border-color: var(--color-present);
-            box-shadow: inset 0 0 10px var(--color-present);
-            /* No revelamos la letra, solo marcamos el borde/brillo */
-        }
-
-        .tile.present-active {
-            background-color: var(--color-present);
-            border-color: var(--color-present);
-        }
-
-        /* Pistas y Controles */
-        .hints-container { display: flex; gap: 8px; margin-bottom: 10px; }
+        /* Botones de Pistas */
+        .hints { display: flex; gap: 10px; margin-bottom: 15px; }
         .btn-hint {
-            background: #272729;
-            border: 1px solid #565758;
-            color: #d7dadc;
-            padding: 8px 12px;
+            background: var(--poke-blue);
+            color: white;
+            border: 2px solid var(--poke-yellow);
+            padding: 8px 15px;
+            border-radius: 20px;
             cursor: pointer;
-            border-radius: 4px;
+            font-weight: bold;
             font-size: 0.7rem;
         }
+        .btn-hint:hover { background: #2a38a3; }
 
-        #hint-text { color: #aaa; font-size: 0.8rem; height: 1.2rem; margin-bottom: 15px; text-transform: none; }
-
-        .input-section { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        #letter-input {
-            background: transparent;
-            border: 2px solid #565758;
-            color: white;
-            font-size: 1.8rem;
-            width: 50px;
+        #hint-display {
+            background: #d1e8d1;
+            color: #222;
             padding: 10px;
-            text-align: center;
-            border-radius: 4px;
-            outline: none;
-        }
-
-        .btn-main {
-            background-color: #818384;
-            color: white;
-            border: none;
-            padding: 15px 20px;
+            border-radius: 5px;
+            font-size: 0.85rem;
             font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
+            margin-bottom: 15px;
+            width: 100%;
+            text-align: center;
+            min-height: 20px;
+            border-left: 5px solid #538d4e;
         }
 
-        .btn-surrender { background-color: #a33333; }
+        /* Input y Enviar */
+        .controls { display: flex; gap: 10px; align-items: center; }
+        #letter-input {
+            width: 50px;
+            height: 50px;
+            font-size: 1.8rem;
+            text-align: center;
+            border-radius: 10px;
+            border: 4px solid var(--poke-blue);
+            background: white;
+            color: #333;
+            text-transform: uppercase;
+        }
 
-        .discarded-area { margin-top: 25px; width: 100%; max-width: 400px; text-align: center; }
-        #letters-box { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-top: 10px; }
-        .key-absent {
-            background-color: var(--color-absent);
-            width: 32px;
-            height: 42px;
+        .btn-action {
+            background: var(--poke-yellow);
+            color: var(--poke-blue);
+            border: 3px solid var(--poke-blue);
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn-surrender { background: #eee; color: #333; border-color: #999; }
+
+        /* Letras Descartadas */
+        .discarded {
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        .discarded-title { font-size: 0.7rem; color: #aaa; margin-bottom: 10px; }
+        #letters-box { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+        .bad-letter {
+            background: #333;
+            color: #777;
+            width: 30px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 4px;
-            font-size: 0.9rem;
             font-weight: bold;
+            border: 1px solid #444;
         }
 
-        /* Modal */
-        #modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 10; }
+        /* Modal Resultado */
+        #modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 10; }
         #result-modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1e1e1f; padding: 20px; border-radius: 10px; z-index: 11; width: 85%; max-width: 350px; text-align: center;
+            background: white; color: #333; padding: 25px; border-radius: 20px; z-index: 11; width: 85%; max-width: 350px; text-align: center;
+            border: 8px solid var(--poke-blue);
         }
-        #result-modal img { width: 140px; margin: 10px 0; }
-        #result-modal p { text-transform: none; color: #ccc; font-size: 0.9rem; }
+        #result-modal img { width: 160px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); }
+        #result-modal h2 { color: var(--poke-red); margin-top: 0; }
+        #result-modal p { font-size: 0.9rem; line-height: 1.4; text-align: justify; background: #f9f9f9; padding: 10px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <header><h1>POKÉWORDLE</h1></header>
+    <header>
+        <h1>POKÉ AHORCADO</h1>
+    </header>
 
-    <div class="hints-container">
-        <button class="btn-hint" onclick="getHint('region')">Pista: Región</button>
-        <button class="btn-hint" onclick="getHint('type')">Pista: Tipo</button>
-    </div>
-    <div id="hint-text"></div>
-
-    <div id="word-grid"></div>
-
-    <div class="input-section">
-        <input type="text" id="letter-input" maxlength="1" inputmode="text" autocomplete="off">
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-main" onclick="checkLetter()">ADIVINAR</button>
-            <button class="btn-main btn-surrender" onclick="endGame(true)">RENDIRSE</button>
+    <div id="game-screen">
+        <div class="hints">
+            <button class="btn-hint" onclick="getHint('region')">Pista: Región</button>
+            <button class="btn-hint" onclick="getHint('type')">Pista: Tipo</button>
         </div>
-    </div>
+        
+        <div id="hint-display">¡Adivina el Pokémon!</div>
 
-    <div class="discarded-area">
-        <div style="font-size: 0.7rem; color: #565758; letter-spacing: 1px;">LETRAS DESCARTADAS</div>
-        <div id="letters-box"></div>
+        <div id="word-grid"></div>
+
+        <div class="controls">
+            <input type="text" id="letter-input" maxlength="1" autocomplete="off" autofocus>
+            <button class="btn-action" onclick="checkLetter()">LANZAR POKÉBALL</button>
+        </div>
+        
+        <button class="btn-action btn-surrender" style="margin-top: 15px; width: 100%;" onclick="endGame(true)">ESCAPAR DEL COMBATE</button>
+
+        <div class="discarded">
+            <div class="discarded-title">LETRAS FALLIDAS</div>
+            <div id="letters-box"></div>
+        </div>
     </div>
 
     <div id="modal-overlay"></div>
     <div id="result-modal">
         <h2 id="modal-title"></h2>
         <img id="poke-img" src="" alt="">
-        <h3 id="poke-name" style="color: var(--color-correct);"></h3>
+        <h3 id="poke-name" style="text-transform: uppercase; color: var(--poke-blue); letter-spacing: 2px;"></h3>
         <p id="poke-desc"></p>
-        <button class="btn-main" onclick="startNewGame()" style="background-color: var(--color-correct); width: 100%; margin-top: 15px;">VOLVER A JUGAR</button>
+        <button class="btn-action" onclick="startNewGame()" style="width: 100%; background: var(--poke-blue); color: white; margin-top: 10px;">¡NUEVA PARTIDA!</button>
     </div>
 
     <script>
         let targetName = "";
-        let revealedLetters = []; 
-        let presentLetters = new Set(); // Letras que están pero no en esa posición
+        let revealedLetters = [];
         let wrongLetters = [];
         let pokemonData = null;
 
@@ -186,13 +231,12 @@
         };
 
         async function startNewGame() {
-            document.getElementById('word-grid').innerHTML = "Cargando...";
+            document.getElementById('word-grid').innerHTML = "...";
             document.getElementById('letters-box').innerHTML = "";
-            document.getElementById('hint-text').innerText = "";
+            document.getElementById('hint-display').innerText = "¡Un Pokémon salvaje ha aparecido!";
             document.getElementById('modal-overlay').style.display = 'none';
             document.getElementById('result-modal').style.display = 'none';
             wrongLetters = [];
-            presentLetters.clear();
 
             const randomId = Math.floor(Math.random() * 1010) + 1;
             
@@ -202,8 +246,17 @@
                 const speciesRes = await fetch(data.species.url);
                 const speciesData = await speciesRes.json();
                 
-                let region = (randomId <= 151) ? "Kanto" : (randomId <= 251) ? "Johto" : (randomId <= 386) ? "Hoenn" : (randomId <= 493) ? "Sinnoh" : (randomId <= 649) ? "Teselia" : (randomId <= 721) ? "Kalos" : (randomId <= 809) ? "Alola" : (randomId <= 905) ? "Galar" : "Paldea";
-                const desc = speciesData.flavor_text_entries.find(e => e.language.name === 'es')?.flavor_text || "Sin descripción.";
+                let region = "Kanto";
+                if (randomId > 151) region = "Johto";
+                if (randomId > 251) region = "Hoenn";
+                if (randomId > 386) region = "Sinnoh";
+                if (randomId > 493) region = "Teselia";
+                if (randomId > 649) region = "Kalos";
+                if (randomId > 721) region = "Alola";
+                if (randomId > 809) region = "Galar";
+                if (randomId > 905) region = "Paldea";
+
+                const desc = speciesData.flavor_text_entries.find(e => e.language.name === 'es')?.flavor_text || "Datos no registrados en la Pokédex.";
                 
                 pokemonData = {
                     name: data.name.split('-')[0].toLowerCase(),
@@ -222,19 +275,10 @@
         function renderBoard() {
             const container = document.getElementById('word-grid');
             container.innerHTML = "";
-            
             for (let i = 0; i < targetName.length; i++) {
                 const tile = document.createElement('div');
-                tile.className = 'tile';
-                
-                if (revealedLetters[i]) {
-                    tile.classList.add('correct');
-                    tile.innerText = revealedLetters[i];
-                } else if (presentLetters.has(targetName[i])) {
-                    // Si esta letra específica ha sido intentada y está en la palabra pero NO aquí
-                    tile.classList.add('present');
-                }
-                
+                tile.className = 'tile' + (revealedLetters[i] ? ' revealed' : '');
+                tile.innerText = revealedLetters[i] || "";
                 container.appendChild(tile);
             }
         }
@@ -245,34 +289,17 @@
             input.value = "";
             input.focus();
 
-            if (!letter || !/[a-z]/.test(letter)) return;
+            if (!letter || !/[a-z]/.test(letter) || revealedLetters.includes(letter) || wrongLetters.includes(letter)) return;
 
             if (targetName.includes(letter)) {
-                let foundMatch = false;
-                // Verificamos si la letra está en alguna posición que no ha sido revelada aún
                 for (let i = 0; i < targetName.length; i++) {
-                    if (targetName[i] === letter) {
-                        // Si el usuario por casualidad la pega en su sitio (En este modo letra a letra, revelamos todas las posiciones correctas)
-                        revealedLetters[i] = letter;
-                        foundMatch = true;
-                    }
+                    if (targetName[i] === letter) revealedLetters[i] = letter;
                 }
-                
-                // Lógica de "Amarillo": Si la letra existe pero no hemos completado todas sus posiciones
-                // En este juego de letra única, el amarillo sirve para saber que esa letra "está" 
-                // aunque no la hayamos asignado nosotros a un hueco (la IA lo hace por ti al acertar).
-                // Para que sea más Wordle, si la letra está, se pone en verde. 
-                // Si quieres que el amarillo funcione, el usuario debería elegir POSICIÓN y LETRA.
-                // Como es tipo Ahorcado, vamos a marcar en AMARILLO las letras que el usuario 
-                // ya sabe que están pero quizás hay más repeticiones.
-                
                 renderBoard();
                 if (!revealedLetters.includes(null)) endGame(false);
             } else {
-                if (!wrongLetters.includes(letter)) {
-                    wrongLetters.push(letter);
-                    updateDiscarded();
-                }
+                wrongLetters.push(letter);
+                updateDiscarded();
             }
         }
 
@@ -281,27 +308,29 @@
             list.innerHTML = "";
             wrongLetters.sort().forEach(l => {
                 const div = document.createElement('div');
-                div.className = 'key-absent';
+                div.className = 'bad-letter';
                 div.innerText = l.toUpperCase();
                 list.appendChild(div);
             });
         }
 
         function getHint(type) {
-            const hintBox = document.getElementById('hint-text');
-            hintBox.innerText = (type === 'region') ? `REGIÓN: ${pokemonData.region}` : `TIPO: ${pokemonData.type}`;
+            const display = document.getElementById('hint-display');
+            display.innerText = (type === 'region') ? `Avistado en: ${pokemonData.region}` : `Elemento: ${pokemonData.type}`;
         }
 
         function endGame(surrender) {
-            document.getElementById('modal-title').innerText = surrender ? "¡TE HAS RENDIDO!" : "¡ADIVINADO!";
+            document.getElementById('modal-title').innerText = surrender ? "¡EL POKÉMON ESCAPÓ!" : "¡POKÉMON CAPTURADO!";
             document.getElementById('poke-img').src = pokemonData.img;
-            document.getElementById('poke-name').innerText = pokemonData.name.toUpperCase();
+            document.getElementById('poke-name').innerText = pokemonData.name;
             document.getElementById('poke-desc').innerText = pokemonData.desc;
             document.getElementById('modal-overlay').style.display = 'block';
             document.getElementById('result-modal').style.display = 'block';
         }
 
-        document.getElementById('letter-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkLetter(); });
+        document.getElementById('letter-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkLetter();
+        });
 
         startNewGame();
     </script>
